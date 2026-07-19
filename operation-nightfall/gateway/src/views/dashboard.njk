@@ -1,0 +1,121 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<section class="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="dashboard-welcome">Welcome back, <strong>{{ user.username }}</strong> <span class="role-badge role-{{ user.role }}">{{ user.role }}</span></p>
+    </div>
+    <div class="dashboard-actions">
+      <form method="POST" action="/logout" style="display:inline;">
+        <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Projects -->
+    <div class="dashboard-card dashboard-card-wide">
+      <div class="card-header">
+        <h2>Your Projects</h2>
+        <span class="card-count">{{ projects | length }} projects</span>
+      </div>
+      <div class="card-body">
+        {% if projects | length > 0 %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Last Deploy</th>
+              <th>Health</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in projects %}
+            <tr>
+              <td>
+                <div class="project-name">{{ project.name }}</div>
+                <div class="project-desc">{{ project.description | truncate(60) }}</div>
+              </td>
+              <td><span class="status-badge status-{{ project.status }}">{{ project.status }}</span></td>
+              <td>{{ project.last_deploy | timeago }}</td>
+              <td>
+                <div class="health-bar">
+                  <div class="health-fill" style="width: {{ project.health }}%"></div>
+                </div>
+                <span class="health-value">{{ project.health }}%</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <p>No projects found. Contact your team lead to be added to a project.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="card-body">
+        <div class="quick-actions">
+          <a href="/api/v1/projects" class="action-item">
+            <span class="action-icon">📋</span>
+            <span>View All Projects</span>
+          </a>
+          <a href="/status" class="action-item">
+            <span class="action-icon">📊</span>
+            <span>System Status</span>
+          </a>
+          <a href="#" class="action-item" onclick="alert('Feature coming in v3.3.0')">
+            <span class="action-icon">🔑</span>
+            <span>Manage API Keys</span>
+          </a>
+          <a href="#" class="action-item" onclick="alert('Feature coming in v3.3.0')">
+            <span class="action-icon">📝</span>
+            <span>Audit Logs</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2>System Info</h2>
+      </div>
+      <div class="card-body">
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Portal Version</span>
+            <span class="info-value">v3.2.1-rc4</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">API Version</span>
+            <span class="info-value">v1.8.0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Environment</span>
+            <span class="info-value">Production</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Region</span>
+            <span class="info-value">ap-south-1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Your Role</span>
+            <span class="info-value">{{ user.role }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

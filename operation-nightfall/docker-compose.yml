@@ -1,0 +1,129 @@
+services:
+  # ============================================================
+  # PostgreSQL — stores users, projects, secrets, audit logs
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: novacorp
+      POSTGRES_USER: novacorp_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-N0v4C0rp_Pg_2024!}
+    volumes:
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novacorp_app -d novacorp"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ============================================================
+  # Redis — session store, caching
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD:-R3d1s_N0v4_2024!} --maxmemory 64mb --maxmemory-policy allkeys-lru
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-R3d1s_N0v4_2024!}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ============================================================
+  # Internal API — microservice with webhook, admin, export
+  # ============================================================
+  internal-api:
+    build:
+      context: ./internal-api
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://novacorp_app:${POSTGRES_PASSWORD:-N0v4C0rp_Pg_2024!}@postgres:5432/novacorp
+      REDIS_URL: redis://:${REDIS_PASSWORD:-R3d1s_N0v4_2024!}@redis:6379
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-intk_a7f3b9c2e1d4068597fabcde12345678}
+      FLAG_VALUE: ${FLAG_VALUE:-flag{n1ghtf4ll_ch41n_compl3t3_2024}}
+      JWT_SECRET: ${JWT_SECRET:-s3cr3t_jwt_n0v4c0rp_k3y_d0_n0t_l34k}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  # ============================================================
+  # Admin Bot — periodically refreshes admin session in Redis
+  # ============================================================
+  admin-bot:
+    build:
+      context: ./admin-bot
+      dockerfile: Dockerfile
+    environment:
+      REDIS_URL: redis://:${REDIS_PASSWORD:-R3d1s_N0v4_2024!}@redis:6379
+      ADMIN_SESSION_TOKEN: ${ADMIN_SESSION_TOKEN:-sess_adm1n_7f3b9c2e1d40685_n0v4c0rp}
+      ADMIN_USER_ID: "1"
+      REFRESH_INTERVAL_MS: "30000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  # ============================================================
+  # API Gateway — public-facing Express + Nunjucks app
+  # ============================================================
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      INTERNAL_API_URL: http://internal-api:3001
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-intk_a7f3b9c2e1d4068597fabcde12345678}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-R3d1s_N0v4_2024!}@redis:6379
+      SESSION_SECRET: ${SESSION_SECRET:-g4t3w4y_s3ss10n_s3cr3t_n0v4}
+      JWT_SECRET: ${JWT_SECRET:-s3cr3t_jwt_n0v4c0rp_k3y_d0_n0t_l34k}
+    depends_on:
+      - internal-api
+      - redis
+    networks:
+      - public
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+networks:
+  public:
+    driver: bridge
+  internal:
+    driver: bridge
+    internal: true
+
+volumes:
+  pg_data:

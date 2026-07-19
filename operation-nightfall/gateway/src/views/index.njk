@@ -1,0 +1,78 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="hero-greeting">Welcome to</span>
+      NovaCorp DevPortal
+    </h1>
+    <p class="hero-subtitle">
+      Internal developer platform for building, deploying, and monitoring
+      NovaCorp's fintech infrastructure. Access CI/CD pipelines, service dashboards,
+      and API documentation.
+    </p>
+    <div class="hero-actions">
+      <a href="/login" class="btn btn-primary">Sign In</a>
+      <a href="/status" class="btn btn-secondary">System Status</a>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>CI/CD Pipelines</h3>
+      <p>Automated build, test, and deployment pipelines with real-time monitoring and rollback capabilities.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Secrets Management</h3>
+      <p>Secure vault for API keys, credentials, and certificates with role-based access control.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Service Monitoring</h3>
+      <p>Real-time metrics, alerting, and incident management for all microservices.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>API Gateway</h3>
+      <p>Unified API management with rate limiting, authentication, and request routing.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Audit Logging</h3>
+      <p>Comprehensive audit trail for compliance, security review, and debugging.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚀</div>
+      <h3>Webhooks</h3>
+      <p>Event-driven integrations with Slack, PagerDuty, and custom endpoints for real-time notifications.</p>
+    </div>
+  </div>
+</section>
+
+<section class="quick-stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <span class="stat-value">24</span>
+      <span class="stat-label">Active Services</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">99.9%</span>
+      <span class="stat-label">Uptime (30d)</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">1.2M</span>
+      <span class="stat-label">API Calls/Day</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">47</span>
+      <span class="stat-label">Team Members</span>
+    </div>
+  </div>
+</section>
+{% endblock %}

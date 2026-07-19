@@ -1,0 +1,54 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<section class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <span class="login-icon">◆</span>
+        <h1>Sign In</h1>
+        <p>Access the NovaCorp Developer Portal</p>
+      </div>
+
+      {% if error %}
+      <div class="alert alert-error alert-sm">
+        <span class="alert-icon">⚠</span>
+        {% if error == 'missing_fields' %}
+          <span>Please enter both username and password.</span>
+        {% elif error == 'unauthorized' %}
+          <span>Your session has expired. Please sign in again.</span>
+        {% elif error == 'auth_failed' %}
+          <span>Invalid credentials. Please try again.</span>
+        {% else %}
+          <span>{{ error }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/login" class="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" 
+                 placeholder="e.g., developer" 
+                 autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" 
+                 placeholder="Enter your password" 
+                 autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      </form>
+
+      <div class="login-footer">
+        <p>Having trouble? Contact <a href="mailto:devops@novacorp.internal">devops@novacorp.internal</a></p>
+        <p class="login-hint">
+          <!-- Hint: New employees use the standard onboarding credentials -->
+          <!-- Default dev account: developer / N0v4D3v2024 -->
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

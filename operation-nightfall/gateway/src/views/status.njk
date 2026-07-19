@@ -1,0 +1,76 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<section class="status-page">
+  <div class="status-header">
+    <h1>System Status</h1>
+    <p class="status-subtitle">Real-time health monitoring for NovaCorp infrastructure</p>
+    <div class="status-filter">
+      <form method="GET" action="/status" class="filter-form">
+        <label for="service-filter">Filter by service:</label>
+        <input type="text" id="service-filter" name="service" 
+               placeholder="e.g., api-gateway, database, all" 
+               value="" class="filter-input">
+        <button type="submit" class="btn btn-sm btn-primary">Check</button>
+      </form>
+    </div>
+  </div>
+
+  {% block status_content %}{% endblock %}
+
+  <div class="status-grid">
+    {% for key, svc in services %}
+    <div class="status-card status-{{ svc.status }}">
+      <div class="status-card-header">
+        <span class="status-dot status-dot-{{ svc.status }}"></span>
+        <h3>{{ svc.name }}</h3>
+      </div>
+      <div class="status-card-body">
+        <div class="status-metric">
+          <span class="metric-label">Status</span>
+          <span class="metric-value metric-{{ svc.status }}">{{ svc.status | capitalize }}</span>
+        </div>
+        <div class="status-metric">
+          <span class="metric-label">Latency</span>
+          <span class="metric-value">{{ svc.latency }}</span>
+        </div>
+        <div class="status-metric">
+          <span class="metric-label">Uptime</span>
+          <span class="metric-value">{{ svc.uptime }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="status-timeline">
+    <h2>Recent Incidents</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-resolved"></div>
+        <div class="timeline-content">
+          <h4>Object Storage Latency Spike</h4>
+          <p class="timeline-time">2 hours ago — Resolved</p>
+          <p>Intermittent latency increase on storage operations. Root cause: network congestion on storage cluster. Mitigated by failover.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-maintenance"></div>
+        <div class="timeline-content">
+          <h4>ML Pipeline Scheduled Maintenance</h4>
+          <p class="timeline-time">Started 6 hours ago — In Progress</p>
+          <p>Upgrading ML inference nodes to GPU driver v535. Expected completion in 4 hours.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot timeline-dot-resolved"></div>
+        <div class="timeline-content">
+          <h4>Auth Service Certificate Rotation</h4>
+          <p class="timeline-time">1 day ago — Resolved</p>
+          <p>Routine TLS certificate rotation completed successfully. No user impact.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

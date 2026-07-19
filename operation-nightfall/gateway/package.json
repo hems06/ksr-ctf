@@ -1,0 +1,21 @@
+{
+  "name": "novacorp-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NovaCorp Internal DevPortal — API Gateway",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.3.2",
+    "morgan": "^1.10.0",
+    "nunjucks": "^3.2.4"
+  }
+}
